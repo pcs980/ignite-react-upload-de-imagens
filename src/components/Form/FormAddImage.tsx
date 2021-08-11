@@ -59,7 +59,6 @@ export function FormAddImage({ closeModal }: FormAddImageProps): JSX.Element {
 
   const onSubmit = async (data: Record<string, unknown>): Promise<void> => {
     try {
-      console.log(data, imageUrl, localImageUrl);
       if (!imageUrl) {
         toast({
           status: 'error',
@@ -92,6 +91,7 @@ export function FormAddImage({ closeModal }: FormAddImageProps): JSX.Element {
         isClosable: true,
       });
     } finally {
+      mutation.reset();
       setLocalImageUrl('');
       setImageUrl('');
       reset();

@@ -2,7 +2,6 @@ import { Button, Box } from '@chakra-ui/react';
 import { useMemo } from 'react';
 import { useInfiniteQuery } from 'react-query';
 
-import { AxiosResponse } from 'axios';
 import { Header } from '../components/Header';
 import { CardList } from '../components/CardList';
 import { api } from '../services/api';
@@ -30,12 +29,14 @@ export default function Home(): JSX.Element {
     hasNextPage,
   } = useInfiniteQuery(
     'images',
-    // AXIOS REQUEST WITH PARAM
     async ({ pageParam = 0 }) => {
-      const response = await api.get(`/api/images?after=${pageParam}`);
+      const response = await api.get('/api/images', {
+        params: {
+          after: pageParam,
+        },
+      });
       return response.data;
     },
-    // GET AND RETURN NEXT PAGE PARAM
     { getNextPageParam: (lastPage, pages) => lastPage.after }
   );
 
@@ -43,12 +44,10 @@ export default function Home(): JSX.Element {
     return data?.pages?.flatMap((p: Page) => [...p.data]);
   }, [data]);
 
-  // RENDER LOADING SCREEN
   if (isLoading) {
     return <Loading />;
   }
 
-  // RENDER ERROR SCREEN
   if (isError) {
     return <Error />;
   }
@@ -65,7 +64,9 @@ export default function Home(): JSX.Element {
             onClick={() => fetchNextPage()}
             my="8"
           >
-            {isFetchingNextPage ? 'Carregando...' : 'Carregar mais'}
+            {isFetchingNextPage || isLoading
+              ? 'Carregando...'
+              : 'Carregar mais'}
           </Button>
         )}
       </Box>
